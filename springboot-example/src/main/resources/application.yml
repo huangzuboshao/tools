@@ -1,0 +1,9 @@
+server:
+  port: 8888
+
+spring:
+  encrypt:
+    key: 12345678123456781234567812345678
+    response-encrypt-uri-list:
+      - /test3
+      - /test4
