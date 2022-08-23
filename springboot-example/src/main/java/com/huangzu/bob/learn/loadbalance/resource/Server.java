@@ -33,7 +33,8 @@ public class Server {
         return port;
     }
 
-    public Server ping(){
+    public Server ping() {
+        long start = System.currentTimeMillis();
         // 生成一个1000~3000之间的随机数
         int random = ThreadLocalRandom.current().nextInt(1000, 2000);
         try {
@@ -43,6 +44,8 @@ public class Server {
             e.printStackTrace();
         }
         // 最后返回自身的IP
+        String s = this.toString();
+        System.out.println("当前线程：" + Thread.currentThread().getName() + "\t ms：" + (System.currentTimeMillis() - start) + "\t this:" + s);
         return this;
     }
 

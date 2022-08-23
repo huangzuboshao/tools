@@ -20,9 +20,10 @@ public class ResponseTimeStrategy {
     static ExecutorService pingServerPool = new ThreadPoolExecutor(ServerUtils.SERVERS.size(), ServerUtils.SERVERS.size(),
             0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("owner-thread-", false)
     );
-    static CountDownLatch countDownLatch = new CountDownLatch(ServerUtils.SERVERS.size());
+
 
     public static Server getServer() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         // 创建一个接收结果返回的server节点对象
         final WeightServer resultServer = new WeightServer();
         // 根据集群节点数量初始化一个异步任务数组
@@ -43,6 +44,7 @@ public class ResponseTimeStrategy {
         cfAnyOf.thenAccept(node -> {
             System.out.println("最先响应检测请求的节点为：" + node);
             resultServer.setServer((Server) node);
+            countDownLatch.countDown();
         });
         //  阻塞主线程一段时间，防止CompletableFuture退出
         countDownLatch.await();
@@ -53,7 +55,7 @@ public class ResponseTimeStrategy {
 
     public static void main(String[] args) throws InterruptedException {
         for (int i = 1; i <= 5; i++){
-            System.out.println("第"+ i + "个请求：" + getServer());
+            getServer();
         }
         pingServerPool.shutdown();
     }
